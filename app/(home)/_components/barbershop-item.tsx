@@ -12,9 +12,9 @@ interface BarbershopItemProps {
 
 export const BarbershopItem = ({ barbershop }: BarbershopItemProps) => {
   return (
-    <Card className="max-w-[167px] min-w-[167px] rounded-2xl">
+    <Card className="max-w-[148px] min-w-[148px] rounded-2xl">
       <CardContent className="p-2 flex flex-col gap-3">
-        <div className="relative w-full h-[159px]">
+        <div className="relative w-full h-[140px]">
           <div className="absolute top-2 left-2 z-50">
             <Badge
               variant="secondary"

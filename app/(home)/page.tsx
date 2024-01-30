@@ -42,7 +42,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-3 mt-6">
+        <section className="flex flex-col gap-3 mt-6 mb-[4.5rem]">
           <h2 className="text-sm uppercase text-gray-400 font-bold">
             Populares
           </h2>
