@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Badge } from '../ui/badge'
 import { Card, CardContent } from '../ui/card'
 
-export const BookCard = () => {
+export const BookingCard = () => {
   return (
     <Card className="h-full ">
       <CardContent className="p-5 flex justify-between hfull items-center py-0">
