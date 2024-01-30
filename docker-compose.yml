@@ -1,11 +1,11 @@
 version: '3'
 
 services: 
-  fsw-barber:
+  fsw-barber-schedule:
     image: bitnami/postgresql:latest
     ports: 
       - 5432:5432
     environment: 
-      - POSTGRESQL_USERNAME=fsw-barber-user
-      - POSTGRESQL_PASSWORD=fsw-barber-pass
+      - POSTGRESQL_USERNAME=fsw-barber
+      - POSTGRESQL_PASSWORD=fsw-barber
       - POSTGRESQL_DATABASE=fsw-barber-db
