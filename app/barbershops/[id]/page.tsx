@@ -2,6 +2,7 @@ import { prismaClient } from '@/app/lib/prisma'
 import { redirect } from 'next/navigation'
 import React from 'react'
 import { BarbershopHero } from './_components/barbershop-hero'
+import { ServicesItem } from './_components/services-item'
 
 interface BarbershopDetailsPage {
   params: {
@@ -14,6 +15,9 @@ const BarbershopDetailsPage = async ({ params }: BarbershopDetailsPage) => {
     where: {
       id: params.id,
     },
+    include: {
+      services: true,
+    },
   })
 
   if (!barbershop) {
@@ -23,6 +27,12 @@ const BarbershopDetailsPage = async ({ params }: BarbershopDetailsPage) => {
   return (
     <div>
       <BarbershopHero barbershop={barbershop} />
+
+      <div className="p-3 mt-3 flex flex-col gap-3">
+        {barbershop.services.map((service) => (
+          <ServicesItem key={service.id} service={service} />
+        ))}
+      </div>
     </div>
   )
 }
