@@ -5,6 +5,7 @@ import { Header } from '../components/common/header'
 import { BookingCard } from '../components/common/booking-card'
 import { prismaClient } from '../lib/prisma'
 import { BarbershopItem } from './_components/barbershop-item'
+import Link from 'next/link'
 
 export default async function Home() {
   const barbershops = await prismaClient.barbershop.findMany({})
