@@ -58,7 +58,7 @@ export const BarbershopItem = ({ barbershop }: BarbershopItemProps) => {
           className="w-full"
           variant="secondary"
         >
-          Reservar
+          Agendar
         </Button>
       </CardContent>
     </Card>
