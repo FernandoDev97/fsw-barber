@@ -18,7 +18,10 @@ import { ptBR } from 'date-fns/locale'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { generateDayTimeList } from '../helpers/hours'
-import { format } from 'date-fns'
+import { format, setHours, setMinutes } from 'date-fns'
+import { saveBooking } from '../actions/save-booking'
+import { useSession } from 'next-auth/react'
+import { Loader2 } from 'lucide-react'
 
 interface ServicesItemProps {
   service: Service
@@ -26,8 +29,10 @@ interface ServicesItemProps {
 }
 
 export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
+  const { data } = useSession()
   const [date, setDate] = useState<Date | undefined>()
   const [hour, setHour] = useState<string | undefined>()
+  const [isLoading, setIsLoading] = useState(false)
 
   const timeList = useMemo(() => {
     return date ? generateDayTimeList(date) : []
@@ -40,6 +45,31 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
 
   const handleHourClick = (time: string) => {
     setHour(time)
+  }
+
+  const handleBookingSubmit = async () => {
+    setIsLoading(true)
+    try {
+      if (!date || !hour || !data?.user) {
+        return
+      }
+
+      const dateInHour = Number(hour.split(':')[0])
+      const dateInMinutes = Number(hour.split(':')[1])
+
+      const newDate = setMinutes(setHours(date, dateInHour), dateInMinutes)
+
+      await saveBooking({
+        serviceId: service.id,
+        barbershopId: barbershop.id,
+        date: newDate,
+        userId: (data?.user as any).id,
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -165,7 +195,14 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
                         </Card>
                       </div>
                       <SheetFooter className="mt-4">
-                        <Button className="w-fit mx-auto">
+                        <Button
+                          disabled={!data || !hour || isLoading}
+                          onClick={handleBookingSubmit}
+                          className="w-fit mx-auto"
+                        >
+                          {isLoading && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          )}
                           Confirmar reserva
                         </Button>
                       </SheetFooter>
