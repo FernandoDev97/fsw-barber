@@ -1,13 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { CalendarDays, Home, MenuIcon } from 'lucide-react'
+import { MenuIcon } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
-import { useSession } from 'next-auth/react'
-
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
-
 import { MenuNavigation } from './menu-navigation'
 
 export const Header = () => {
