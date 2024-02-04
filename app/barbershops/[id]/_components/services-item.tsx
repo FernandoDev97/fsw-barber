@@ -13,10 +13,10 @@ import {
   SheetTrigger,
 } from '@/app/components/ui/sheet'
 import { covertPriceToReal } from '@/app/lib/utils'
-import { Barbershop, Service } from '@prisma/client'
+import { Barbershop, Booking, Service } from '@prisma/client'
 import { ptBR } from 'date-fns/locale'
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { generateDayTimeList } from '../helpers/hours'
 import { format, setHours, setMinutes } from 'date-fns'
 import { saveBooking } from '../actions/save-booking'
@@ -24,6 +24,7 @@ import { useSession } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { getDayBookings } from '../actions/get-day-bookings'
 
 interface ServicesItemProps {
   service: Service
@@ -37,10 +38,43 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
   const [hour, setHour] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(false)
   const [sheetIsOpen, setSheetIsOpen] = useState(false)
+  const [dayBookings, setDayBookings] = useState<Booking[]>([])
+
+  useEffect(() => {
+    if (!date) {
+      return
+    }
+
+    const refreshAvailabreHours = async () => {
+      const _dayBookings = await getDayBookings(barbershop.id, date)
+      setDayBookings(_dayBookings)
+    }
+
+    refreshAvailabreHours()
+  }, [date, barbershop.id])
 
   const timeList = useMemo(() => {
-    return date ? generateDayTimeList(date) : []
-  }, [date])
+    if (!date) {
+      return []
+    }
+    return generateDayTimeList({ date }).filter((time) => {
+      const dateInHour = Number(time.split(':')[0])
+      const dateInMinutes = Number(time.split(':')[1])
+
+      const booking = dayBookings.find((booking) => {
+        const bookingHour = booking.date.getHours()
+        const bookingMinutes = booking.date.getMinutes()
+
+        return bookingHour === dateInHour && bookingMinutes === dateInMinutes
+      })
+
+      if (!booking) {
+        return true
+      }
+
+      return false
+    })
+  }, [date, dayBookings])
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date)
@@ -162,34 +196,39 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
 
                   {date && (
                     <>
-                      <div className="flex gap-4 no-scrollbar px-5 overflow-x-auto">
-                        {timeList.map((time) => (
-                          <Button
-                            onClick={() => handleHourClick(time)}
-                            variant={hour === time ? 'default' : 'outline'}
-                            className="rounded-full border-secondary"
-                            key={time}
-                          >
-                            {time}
-                          </Button>
-                        ))}
-                      </div>
+                      {timeList.length ? (
+                        <div className="flex gap-4 w-full no-scrollbar px-5 overflow-x-auto">
+                          {timeList.map((time) => (
+                            <Button
+                              key={time}
+                              onClick={() => handleHourClick(time)}
+                              variant={hour === time ? 'default' : 'outline'}
+                              className="rounded-full border-secondary"
+                            >
+                              {time}
+                            </Button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-400 px-6">
+                          Nao temos mais horários disponísveis para este dia.
+                        </p>
+                      )}
                       <Separator />
                     </>
                   )}
 
-                  {date && hour && (
-                    <>
-                      <div className="px-5">
-                        <Card>
-                          <CardContent className="p-3 flex flex-col gap-3">
-                            <div className="flex justify-between">
-                              <h2 className="font-bold">{service.name}</h2>
-                              <h3 className="font-bold text-sm">
-                                {covertPriceToReal(Number(service.price))}
-                              </h3>
-                            </div>
-
+                  <>
+                    <div className="px-5">
+                      <Card>
+                        <CardContent className="p-3 flex flex-col gap-3">
+                          <div className="flex justify-between">
+                            <h2 className="font-bold">{service.name}</h2>
+                            <h3 className="font-bold text-sm">
+                              {covertPriceToReal(Number(service.price))}
+                            </h3>
+                          </div>
+                          {date && (
                             <div className="flex justify-between">
                               <p className="text-gray-400 text-sm">Data</p>
                               <p className="text-sm ">
@@ -198,33 +237,35 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
                                 })}
                               </p>
                             </div>
+                          )}
 
+                          {hour && (
                             <div className="flex justify-between">
                               <p className="text-gray-400 text-sm">Horário</p>
                               <p className="text-sm ">{hour}</p>
                             </div>
-
-                            <div className="flex justify-between">
-                              <p className="text-gray-400 text-sm">Barbearia</p>
-                              <p className="text-sm ">{barbershop.name}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                      <SheetFooter className="mt-4">
-                        <Button
-                          disabled={!data || !hour || isLoading}
-                          onClick={handleBookingSubmit}
-                          className="w-fit mx-auto"
-                        >
-                          {isLoading && (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           )}
-                          Confirmar reserva
-                        </Button>
-                      </SheetFooter>
-                    </>
-                  )}
+
+                          <div className="flex justify-between">
+                            <p className="text-gray-400 text-sm">Barbearia</p>
+                            <p className="text-sm ">{barbershop.name}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <SheetFooter className="mt-4">
+                      <Button
+                        disabled={!data || !hour || isLoading}
+                        onClick={handleBookingSubmit}
+                        className="w-fit mx-auto"
+                      >
+                        {isLoading && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Confirmar reserva
+                      </Button>
+                    </SheetFooter>
+                  </>
                 </SheetContent>
               </Sheet>
             </div>
