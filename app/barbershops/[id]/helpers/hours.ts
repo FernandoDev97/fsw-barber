@@ -21,7 +21,7 @@ export function generateDayTimeList({
   const startTime = setMinutes(
     setHours(
       date,
-      dateSelected === currentDay && currentHour > 9 ? currentHour : 9,
+      dateSelected === currentDay && currentHour > 9 ? currentHour + 1 : 9,
     ),
     0,
   ) // Set start time to 09:00 or current hour

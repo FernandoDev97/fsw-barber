@@ -25,6 +25,7 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { getDayBookings } from '../actions/get-day-bookings'
+import { ModalLogin } from '@/app/components/common/modal-login'
 
 interface ServicesItemProps {
   service: Service
@@ -101,7 +102,7 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
         serviceId: service.id,
         barbershopId: barbershop.id,
         date: newDate,
-        userId: (data?.user as any).id,
+        userId: data.user.id as string,
       })
 
       setSheetIsOpen(false)
@@ -120,6 +121,12 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
       console.log(error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleModalLoginIfNotSession = () => {
+    if (!data?.user) {
+      return <ModalLogin />
     }
   }
 
@@ -148,126 +155,134 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
               >
                 {covertPriceToReal(Number(service.price))}
               </p>
-              <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
-                <SheetTrigger asChild>
-                  <Button className="font-bold" variant="secondary">
-                    Reservar
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="p-0 flex flex-col gap-6">
-                  <SheetHeader className="px-5 pt-6 text-left">
-                    <SheetTitle>Fazer reserva</SheetTitle>
-                  </SheetHeader>
+              {data?.user ? (
+                <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
+                  <SheetTrigger onClick={handleModalLoginIfNotSession} asChild>
+                    <Button className="font-bold" variant="secondary">
+                      Reservar
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="p-0 flex flex-col gap-6">
+                    <SheetHeader className="px-5 pt-6 text-left">
+                      <SheetTitle>Fazer reserva</SheetTitle>
+                    </SheetHeader>
 
-                  <Separator />
+                    <Separator />
 
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={handleDateClick}
-                    locale={ptBR}
-                    fromDate={new Date()}
-                    styles={{
-                      head_cell: {
-                        width: '100%',
-                        textTransform: 'capitalize',
-                      },
-                      cell: {
-                        width: '100%',
-                      },
-                      button: {
-                        width: '100%',
-                      },
-                      nav_button_previous: {
-                        width: '32px',
-                        height: '32px',
-                      },
-                      nav_button_next: {
-                        width: '32px',
-                        height: '32px',
-                      },
-                      caption: {
-                        textTransform: 'capitalize',
-                      },
-                    }}
-                  />
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateClick}
+                      locale={ptBR}
+                      fromDate={new Date()}
+                      styles={{
+                        head_cell: {
+                          width: '100%',
+                          textTransform: 'capitalize',
+                        },
+                        cell: {
+                          width: '100%',
+                        },
+                        button: {
+                          width: '100%',
+                        },
+                        nav_button_previous: {
+                          width: '32px',
+                          height: '32px',
+                        },
+                        nav_button_next: {
+                          width: '32px',
+                          height: '32px',
+                        },
+                        caption: {
+                          textTransform: 'capitalize',
+                        },
+                      }}
+                    />
 
-                  <Separator />
+                    <Separator />
 
-                  {date && (
-                    <>
-                      {timeList.length ? (
-                        <div className="flex gap-4 w-full no-scrollbar px-5 overflow-x-auto">
-                          {timeList.map((time) => (
-                            <Button
-                              key={time}
-                              onClick={() => handleHourClick(time)}
-                              variant={hour === time ? 'default' : 'outline'}
-                              className="rounded-full border-secondary"
-                            >
-                              {time}
-                            </Button>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-400 px-6">
-                          Nao temos mais horários disponísveis para este dia.
-                        </p>
-                      )}
-                      <Separator />
-                    </>
-                  )}
-
-                  <>
-                    <div className="px-5">
-                      <Card>
-                        <CardContent className="p-3 flex flex-col gap-3">
-                          <div className="flex justify-between">
-                            <h2 className="font-bold">{service.name}</h2>
-                            <h3 className="font-bold text-sm">
-                              {covertPriceToReal(Number(service.price))}
-                            </h3>
+                    {date && (
+                      <>
+                        {timeList.length ? (
+                          <div className="flex gap-4 w-full no-scrollbar px-5 overflow-x-auto">
+                            {timeList.map((time) => (
+                              <Button
+                                key={time}
+                                onClick={() => handleHourClick(time)}
+                                variant={hour === time ? 'default' : 'outline'}
+                                className="rounded-full border-secondary"
+                              >
+                                {time}
+                              </Button>
+                            ))}
                           </div>
-                          {date && (
-                            <div className="flex justify-between">
-                              <p className="text-gray-400 text-sm">Data</p>
-                              <p className="text-sm ">
-                                {format(date, " dd 'de' MMMM", {
-                                  locale: ptBR,
-                                })}
-                              </p>
-                            </div>
-                          )}
-
-                          {hour && (
-                            <div className="flex justify-between">
-                              <p className="text-gray-400 text-sm">Horário</p>
-                              <p className="text-sm ">{hour}</p>
-                            </div>
-                          )}
-
-                          <div className="flex justify-between">
-                            <p className="text-gray-400 text-sm">Barbearia</p>
-                            <p className="text-sm ">{barbershop.name}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                    <SheetFooter className="mt-4">
-                      <Button
-                        disabled={!data || !hour || isLoading}
-                        onClick={handleBookingSubmit}
-                        className="w-fit mx-auto"
-                      >
-                        {isLoading && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <p className="text-sm text-gray-400 px-6">
+                            Nao temos mais horários disponísveis para este dia.
+                          </p>
                         )}
-                        Confirmar reserva
-                      </Button>
-                    </SheetFooter>
-                  </>
-                </SheetContent>
-              </Sheet>
+                        <Separator />
+                      </>
+                    )}
+
+                    <>
+                      <div className="px-5">
+                        <Card>
+                          <CardContent className="p-3 flex flex-col gap-3">
+                            <div className="flex justify-between">
+                              <h2 className="font-bold">{service.name}</h2>
+                              <h3 className="font-bold text-sm">
+                                {covertPriceToReal(Number(service.price))}
+                              </h3>
+                            </div>
+                            {date && (
+                              <div className="flex justify-between">
+                                <p className="text-gray-400 text-sm">Data</p>
+                                <p className="text-sm ">
+                                  {format(date, " dd 'de' MMMM", {
+                                    locale: ptBR,
+                                  })}
+                                </p>
+                              </div>
+                            )}
+
+                            {hour && (
+                              <div className="flex justify-between">
+                                <p className="text-gray-400 text-sm">Horário</p>
+                                <p className="text-sm ">{hour}</p>
+                              </div>
+                            )}
+
+                            <div className="flex justify-between">
+                              <p className="text-gray-400 text-sm">Barbearia</p>
+                              <p className="text-sm ">{barbershop.name}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                      <SheetFooter className="mt-4">
+                        <Button
+                          disabled={!data || !hour || isLoading}
+                          onClick={handleBookingSubmit}
+                          className="w-fit mx-auto"
+                        >
+                          {isLoading && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          )}
+                          Confirmar reserva
+                        </Button>
+                      </SheetFooter>
+                    </>
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <ModalLogin
+                  className="font-bold text-sm"
+                  icon={undefined}
+                  labelButton="Reservar"
+                />
+              )}
             </div>
           </div>
         </div>

@@ -5,23 +5,15 @@ import {
   CalendarDays,
   CircleUserRound,
   Home,
-  LogIn,
   LogOut,
   User,
+  LogIn,
 } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../ui/dialog'
 import { Button } from '../ui/button'
-import { signIn, signOut, useSession } from 'next-auth/react'
-import { GoogleSvg } from '@/app/utils/googleSvg'
+import { signOut, useSession } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import Link from 'next/link'
+import { ModalLogin } from './modal-login'
 
 export const MenuNavigation = () => {
   const { data, status } = useSession()
@@ -37,35 +29,7 @@ export const MenuNavigation = () => {
             <CircleUserRound size={36} className="text-gray-400 opacity-75" />
             <p className="font-bold text-sm">Olá. Faça seu login!</p>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="secondary"
-                className="flex justify-start gap-2 text-xs px-2 py-0"
-              >
-                <LogIn size={18} />
-                Fazer login
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="flex flex-col items-center justify-center">
-              <DialogHeader>
-                <DialogTitle>Faça logi na plataforma</DialogTitle>
-                <DialogDescription>
-                  Conecte-se usando sua conta do Google.
-                </DialogDescription>
-              </DialogHeader>
-              <div>
-                <Button
-                  onClick={() => signIn('google')}
-                  className="flex mx-auto gap-3"
-                  variant="outline"
-                >
-                  <GoogleSvg />
-                  Google
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <ModalLogin icon={<LogIn size={18} />} />
         </div>
       ) : (
         <div className="flex justify-between">
@@ -110,7 +74,7 @@ export const MenuNavigation = () => {
             variant="outline"
             asChild
           >
-            <Link href="/">
+            <Link href="/bookings">
               <CalendarDays />
               Agendamentos
             </Link>
