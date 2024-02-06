@@ -28,7 +28,7 @@ export default async function Home() {
           <h2 className="text-sm uppercase text-gray-400 font-bold">
             Agendamentos
           </h2>
-          <BookingCard />
+          {/* <BookingCard /> */}
         </section>
 
         <section className="flex flex-col gap-3 mt-6">
