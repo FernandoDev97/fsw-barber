@@ -10,25 +10,27 @@ import { options } from '../api/auth/[...nextauth]/options'
 
 export default async function Home() {
   const session = await getServerSession(options)
-  const barbershops = await prismaClient.barbershop.findMany({})
 
-  const confirmedBookings = session?.user
-    ? await prismaClient.booking.findMany({
-        orderBy: {
-          date: 'desc',
-        },
-        where: {
-          userId: session?.user.id as string,
-          date: {
-            gte: new Date(),
+  const [barbershops, confirmedBookings] = await Promise.all([
+    prismaClient.barbershop.findMany({}),
+    session?.user
+      ? await prismaClient.booking.findMany({
+          orderBy: {
+            date: 'desc',
           },
-        },
-        include: {
-          service: true,
-          barbershop: true,
-        },
-      })
-    : []
+          where: {
+            userId: session?.user.id as string,
+            date: {
+              gte: new Date(),
+            },
+          },
+          include: {
+            service: true,
+            barbershop: true,
+          },
+        })
+      : Promise.resolve([]),
+  ])
 
   return (
     <>
