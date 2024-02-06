@@ -20,7 +20,7 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
   const isBookingConfirmed = isFuture(booking.date)
 
   return (
-    <Card className="h-full ">
+    <Card className="h-full min-w-[100%]">
       <CardContent className="p-5 flex justify-between hfull items-center py-0">
         <div className="flex flex-col gap-2 py-5">
           <Badge

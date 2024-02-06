@@ -5,7 +5,6 @@ import { options } from '../api/auth/[...nextauth]/options'
 import { redirect } from 'next/navigation'
 import { prismaClient } from '../lib/prisma'
 import { BookingCard } from '../components/common/booking-card'
-import { isFuture, isPast } from 'date-fns'
 
 const Bookings = async () => {
   const session = await getServerSession(options)
@@ -14,9 +13,12 @@ const Bookings = async () => {
     return redirect('/')
   }
 
-  const bookings = await prismaClient.booking.findMany({
+  const confirmedBookings = await prismaClient.booking.findMany({
     where: {
       userId: session.user.id as string,
+      date: {
+        gte: new Date(),
+      },
     },
     include: {
       service: true,
@@ -24,8 +26,18 @@ const Bookings = async () => {
     },
   })
 
-  const confirmedBookings = bookings.filter((booking) => isFuture(booking.date))
-  const finishedBookinsg = bookings.filter((booking) => isPast(booking.date))
+  const finishedBookinsg = await prismaClient.booking.findMany({
+    where: {
+      userId: session.user.id as string,
+      date: {
+        lt: new Date(),
+      },
+    },
+    include: {
+      service: true,
+      barbershop: true,
+    },
+  })
 
   return (
     <>

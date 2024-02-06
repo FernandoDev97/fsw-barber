@@ -5,9 +5,30 @@ import { Header } from '../components/common/header'
 import { BookingCard } from '../components/common/booking-card'
 import { prismaClient } from '../lib/prisma'
 import { BarbershopItem } from './_components/barbershop-item'
+import { getServerSession } from 'next-auth'
+import { options } from '../api/auth/[...nextauth]/options'
 
 export default async function Home() {
+  const session = await getServerSession(options)
   const barbershops = await prismaClient.barbershop.findMany({})
+
+  const confirmedBookings = session?.user
+    ? await prismaClient.booking.findMany({
+        orderBy: {
+          date: 'desc',
+        },
+        where: {
+          userId: session?.user.id as string,
+          date: {
+            gte: new Date(),
+          },
+        },
+        include: {
+          service: true,
+          barbershop: true,
+        },
+      })
+    : []
 
   return (
     <>
@@ -28,7 +49,11 @@ export default async function Home() {
           <h2 className="text-sm uppercase text-gray-400 font-bold">
             Agendamentos
           </h2>
-          {/* <BookingCard /> */}
+          <div className="flex w-full no-scrollbar gap-3 overflow-auto">
+            {confirmedBookings.map((booking) => (
+              <BookingCard key={booking.id} booking={booking} />
+            ))}
+          </div>
         </section>
 
         <section className="flex flex-col gap-3 mt-6">
