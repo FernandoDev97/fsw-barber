@@ -112,7 +112,7 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
         }),
         action: {
           label: 'Visualizar',
-          onClick: () => router.push('/bookinks'),
+          onClick: () => router.push('/bookings'),
         },
       })
       setDate(undefined)
