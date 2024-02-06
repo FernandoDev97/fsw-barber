@@ -13,31 +13,36 @@ const Bookings = async () => {
     return redirect('/')
   }
 
-  const confirmedBookings = await prismaClient.booking.findMany({
-    where: {
-      userId: session.user.id as string,
-      date: {
-        gte: new Date(),
-      },
-    },
-    include: {
-      service: true,
-      barbershop: true,
-    },
-  })
+  // const confirmedBookings = await
 
-  const finishedBookinsg = await prismaClient.booking.findMany({
-    where: {
-      userId: session.user.id as string,
-      date: {
-        lt: new Date(),
+  // const finishedBookinsg = await
+
+  const [confirmedBookings, finishedBookinsg] = await Promise.all([
+    prismaClient.booking.findMany({
+      where: {
+        userId: session.user.id as string,
+        date: {
+          gte: new Date(),
+        },
       },
-    },
-    include: {
-      service: true,
-      barbershop: true,
-    },
-  })
+      include: {
+        service: true,
+        barbershop: true,
+      },
+    }),
+    prismaClient.booking.findMany({
+      where: {
+        userId: session.user.id as string,
+        date: {
+          lt: new Date(),
+        },
+      },
+      include: {
+        service: true,
+        barbershop: true,
+      },
+    }),
+  ])
 
   return (
     <>
