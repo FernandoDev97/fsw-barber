@@ -16,6 +16,7 @@ import {
 import { Separator } from '../ui/separator'
 import Image from 'next/image'
 import { covertPriceToReal } from '@/app/lib/utils'
+import { Button } from '../ui/button'
 
 interface BookingWithServiceAndBarbershop extends Booking {
   service: Service
@@ -96,7 +97,7 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
             </Card>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3  h-full">
             <Badge
               variant={isBookingConfirmed ? 'default' : 'secondary'}
               className="  cursor-default w-fit"
@@ -133,6 +134,15 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
                 </div>
               </CardContent>
             </Card>
+
+            <div className="w-full flex gap-3 mt-auto mb-8">
+              <Button className="w-full" variant="secondary">
+                Voltar
+              </Button>
+              <Button className="w-full bg-red-400 hover:bg-red-500 transition-all">
+                Cancelar Reserva
+              </Button>
+            </div>
           </div>
         </section>
       </SheetContent>
