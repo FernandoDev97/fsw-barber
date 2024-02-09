@@ -13,10 +13,6 @@ const Bookings = async () => {
     return redirect('/')
   }
 
-  // const confirmedBookings = await
-
-  // const finishedBookinsg = await
-
   const [confirmedBookings, finishedBookinsg] = await Promise.all([
     prismaClient.booking.findMany({
       where: {
