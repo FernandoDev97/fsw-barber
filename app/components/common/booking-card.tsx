@@ -23,6 +23,15 @@ import { Button } from '../ui/button'
 import { cancelBooking } from '@/app/actions/cancel-booking'
 import { toast } from 'sonner'
 import { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
+import { DialogClose } from '@radix-ui/react-dialog'
 
 interface BookingWithServiceAndBarbershop extends Booking {
   service: Service
@@ -165,16 +174,44 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
                   Voltar
                 </Button>
               </SheetClose>
-              <Button
-                onClick={handleCancelClick}
-                disabled={!isBookingConfirmed || isDeleteLoading}
-                className="w-full bg-red-400 hover:bg-red-500 transition-all"
-              >
-                {isDeleteLoading && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Cancelar Reserva
-              </Button>
+              <Dialog>
+                <DialogTrigger>
+                  <Button
+                    disabled={!isBookingConfirmed || isDeleteLoading}
+                    className="w-full"
+                    variant="destructive"
+                  >
+                    {isDeleteLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Cancelar Reserva
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Cancelar reserva</DialogTitle>
+                    <DialogDescription>
+                      Tem certeza que deseja cancelar esse agendamento?
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="flex justify-between gap-3">
+                    <DialogClose asChild>
+                      <Button className="w-full" variant="secondary">
+                        Voltar
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      onClick={handleCancelClick}
+                      disabled={!isBookingConfirmed || isDeleteLoading}
+                      className="w-full"
+                      variant="destructive"
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </section>
