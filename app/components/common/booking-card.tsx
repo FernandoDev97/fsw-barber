@@ -1,4 +1,6 @@
-import { User } from 'lucide-react'
+'use client'
+
+import { Loader2, User } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Badge } from '../ui/badge'
 import { Card, CardContent } from '../ui/card'
@@ -8,6 +10,7 @@ import { ptBR } from 'date-fns/locale'
 import { isFuture } from 'date-fns'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -17,6 +20,18 @@ import { Separator } from '../ui/separator'
 import Image from 'next/image'
 import { covertPriceToReal } from '@/app/lib/utils'
 import { Button } from '../ui/button'
+import { cancelBooking } from '@/app/actions/cancel-booking'
+import { toast } from 'sonner'
+import { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
+import { DialogClose } from '@radix-ui/react-dialog'
 
 interface BookingWithServiceAndBarbershop extends Booking {
   service: Service
@@ -28,7 +43,25 @@ interface BookingCardProps {
 }
 
 export const BookingCard = ({ booking }: BookingCardProps) => {
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false)
   const isBookingConfirmed = isFuture(booking.date)
+
+  const handleCancelClick = async () => {
+    setIsDeleteLoading(true)
+    try {
+      await cancelBooking(booking.id)
+
+      toast.success('Reserva cancelada com sucesso.', {
+        style: {
+          background: 'green',
+        },
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsDeleteLoading(false)
+    }
+  }
 
   return (
     <Sheet>
@@ -86,7 +119,7 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
               width={0}
               height={0}
               alt={booking.barbershop.name}
-              className="w-full object-cove rounded-sm opacity-60 h-[180px]"
+              className="w-full object-cover rounded-sm opacity-60 h-[180px]"
               sizes="100vh"
             />
             <Card className="absolute bottom-2 w-[90%]">
@@ -136,12 +169,49 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
             </Card>
 
             <div className="w-full flex gap-3 mt-auto mb-8">
-              <Button className="w-full" variant="secondary">
-                Voltar
-              </Button>
-              <Button className="w-full bg-red-400 hover:bg-red-500 transition-all">
-                Cancelar Reserva
-              </Button>
+              <SheetClose asChild>
+                <Button className="w-full" variant="secondary">
+                  Voltar
+                </Button>
+              </SheetClose>
+              <Dialog>
+                <DialogTrigger>
+                  <Button
+                    disabled={!isBookingConfirmed || isDeleteLoading}
+                    className="w-full"
+                    variant="destructive"
+                  >
+                    {isDeleteLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Cancelar Reserva
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Cancelar reserva</DialogTitle>
+                    <DialogDescription>
+                      Tem certeza que deseja cancelar esse agendamento?
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="flex justify-between gap-3">
+                    <DialogClose asChild>
+                      <Button className="w-full" variant="secondary">
+                        Voltar
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      onClick={handleCancelClick}
+                      disabled={!isBookingConfirmed || isDeleteLoading}
+                      className="w-full"
+                      variant="destructive"
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </section>

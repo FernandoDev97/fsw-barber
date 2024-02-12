@@ -47,18 +47,22 @@ const Bookings = async () => {
         <h1 className="text-xl font-bold">Agendamentos</h1>
 
         <div className="flex flex-col gap-3 overflow-auto">
-          <h2 className="uppercase font-bold text-gray-400 text-sm mt-6 mb-3">
-            Confirmados
-          </h2>
+          {confirmedBookings.length > 0 && (
+            <h2 className="uppercase font-bold text-gray-400 text-sm mt-6 mb-3">
+              Confirmados
+            </h2>
+          )}
           {confirmedBookings.map((booking) => (
             <BookingCard booking={booking} key={booking.id} />
           ))}
         </div>
 
         <div className="flex flex-col gap-3 overflow-auto">
-          <h2 className="uppercase font-bold text-gray-400 text-sm mt-6 mb-3">
-            Finalizados
-          </h2>
+          {finishedBookinsg.length > 0 && (
+            <h2 className="uppercase font-bold text-gray-400 text-sm mt-6 mb-3">
+              Finalizados
+            </h2>
+          )}
           {finishedBookinsg.map((booking) => (
             <BookingCard booking={booking} key={booking.id} />
           ))}
