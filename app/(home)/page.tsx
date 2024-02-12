@@ -48,9 +48,11 @@ export default async function Home() {
         <Search />
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-sm uppercase text-gray-400 font-bold">
-            Agendamentos
-          </h2>
+          {confirmedBookings.length > 0 && (
+            <h2 className="text-sm uppercase text-gray-400 font-bold">
+              Agendamentos
+            </h2>
+          )}
           <div className="flex w-full no-scrollbar gap-3 overflow-auto">
             {confirmedBookings.map((booking) => (
               <BookingCard key={booking.id} booking={booking} />
