@@ -23,4 +23,5 @@ export const options: NextAuthOptions = {
       return session
     },
   },
+  secret: process.env.NEXT_AUTH_SECRET,
 }
