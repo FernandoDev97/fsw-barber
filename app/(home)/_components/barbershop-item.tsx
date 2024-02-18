@@ -18,7 +18,7 @@ export const BarbershopItem = ({ barbershop }: BarbershopItemProps) => {
   const router = useRouter()
 
   return (
-    <Card className="max-w-[148px] min-w-[148px] rounded-2xl">
+    <Card className="max-w-full min-w-full rounded-2xl">
       <CardContent className="p-2 flex flex-col gap-3">
         <div className="relative w-full h-[140px]">
           <div className="absolute top-2 left-2 z-50">
