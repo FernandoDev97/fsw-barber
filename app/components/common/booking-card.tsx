@@ -175,7 +175,16 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
                 </Button>
               </SheetClose>
               <Dialog>
-                <DialogTrigger>
+                {isBookingConfirmed ? (
+                  <DialogTrigger>
+                    <Button className="w-full" variant="destructive">
+                      {isDeleteLoading && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Cancelar Reserva
+                    </Button>
+                  </DialogTrigger>
+                ) : (
                   <Button
                     disabled={!isBookingConfirmed || isDeleteLoading}
                     className="w-full"
@@ -186,7 +195,8 @@ export const BookingCard = ({ booking }: BookingCardProps) => {
                     )}
                     Cancelar Reserva
                   </Button>
-                </DialogTrigger>
+                )}
+
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Cancelar reserva</DialogTitle>
