@@ -11,8 +11,13 @@ import { options } from '../api/auth/[...nextauth]/options'
 export default async function Home() {
   const session = await getServerSession(options)
 
-  const [barbershops, confirmedBookings] = await Promise.all([
+  const [barbershops, recommended, confirmedBookings] = await Promise.all([
     prismaClient.barbershop.findMany({}),
+    prismaClient.barbershop.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    }),
     session?.user
       ? await prismaClient.booking.findMany({
           orderBy: {
@@ -69,7 +74,7 @@ export default async function Home() {
             Recomendado
           </h2>
           <div className="flex gap-4 overflow-x-auto no-scrollbar">
-            {barbershops.map((barbershop) => (
+            {recommended.map((barbershop) => (
               <div className="max-w-[148px] min-w-[148px]" key={barbershop.id}>
                 <BarbershopItem barbershop={barbershop} />
               </div>
