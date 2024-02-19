@@ -36,7 +36,7 @@ export const Search = ({ searchParams }: SearchProps) => {
     router.push(`/barbershops?search=${data.search}`)
   }
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col">
       <form
         onSubmit={handleSubmit(handleSearchFormSubmit)}
         className="flex items-center gap-2 "
@@ -54,7 +54,7 @@ export const Search = ({ searchParams }: SearchProps) => {
           <SearchIcon size={18} />
         </Button>
       </form>
-      <p className="text-sm text-red-500">{errors.search?.message}</p>
+      <p className="text-sm mt-3 text-red-500">{errors.search?.message}</p>
     </div>
   )
 }
