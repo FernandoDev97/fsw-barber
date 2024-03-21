@@ -1,7 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { CalendarDays, CircleUserRound, LogIn, MenuIcon } from 'lucide-react'
+import {
+  CalendarDays,
+  CircleUserRound,
+  LogIn,
+  LogOut,
+  MenuIcon,
+  User,
+} from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
@@ -9,6 +16,7 @@ import { MenuNavigation } from './menu-navigation'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { ModalLogin } from './modal-login'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export const Header = () => {
   const { data: session, status } = useSession()
@@ -48,10 +56,21 @@ export const Header = () => {
                 icon={<LogIn size={20} />}
               />
             ) : (
-              <Button className="flex items-center font-light gap-2 text-sm">
-                <CircleUserRound size={20} />
-                Perfil
-              </Button>
+              <div className="flex items-center p-0 bg-transparent hover:bg-transparent font-light gap-2 text-sm">
+                <Avatar>
+                  <AvatarImage
+                    src={session?.user.image}
+                    alt={session?.user.name}
+                  />
+                  <AvatarFallback>
+                    <User size={24} />
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-sm font-bold">{session?.user.name}</p>
+                <Button className="p-3" variant="destructive">
+                  <LogOut className="" />
+                </Button>
+              </div>
             )}
           </div>
           <Sheet>
