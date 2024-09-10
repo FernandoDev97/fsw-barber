@@ -170,6 +170,7 @@ export const ServicesItem = ({ service, barbershop }: ServicesItemProps) => {
                     <Separator />
 
                     <Calendar
+                      className="flex flex-col"
                       mode="single"
                       selected={date}
                       onSelect={handleDateClick}
